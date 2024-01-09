@@ -34,4 +34,8 @@ public class ArticleService {
         article.setContent(content);
         this.articleRepository.save(article);
     }
+    public void delete (Integer id){
+        Article article = this.articleRepository.getById(id);
+        this.articleRepository.delete(article);
+    }
 }
