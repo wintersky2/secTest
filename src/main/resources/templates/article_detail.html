@@ -1,0 +1,22 @@
+<html layout:decorate="~{layout}"></html>
+<div layout:fragment="content" class="container my-3">
+    <!-- 질문 -->
+    <h2 class="border-bottom py-2" th:text="${article.title}"></h2>
+    <div class="card my-3">
+        <div class="card-body">
+            <div class="card-text" style="white-space: pre-line;" th:text="${article.content}"></div>
+            <div class="d-flex justify-content-end">
+                <div class="badge bg-light text-dark p-2 text-start">
+                    <div th:text="${#temporals.format(article.createDate, 'yyyy-MM-dd HH:mm')}"></div>
+                </div>
+            </div>
+            <div class="my-3">
+                <a th:href="@{|/article/modify/${article.id}|}" class="btn btn-sm btn-outline-secondary"
+                   sec:authorize="isAuthenticated()"
+                   th:if="${article.author != null and #authentication.getPrincipal().getUserId() == article.author.userId}"
+                   th:text="수정"></a>
+            </div>
+        </div>
+    </div>
+    <a href="/article/list">Article 목록</a>
+</div>
