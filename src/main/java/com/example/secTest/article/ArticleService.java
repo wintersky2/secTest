@@ -29,4 +29,9 @@ public class ArticleService {
         Article article = this.articleRepository.getById(id);
         return article;
     }
+    public void modify(Article article, String title, String content) {
+        article.setTitle(title);
+        article.setContent(content);
+        this.articleRepository.save(article);
+    }
 }
