@@ -21,57 +21,62 @@ import java.util.List;
 public class ArticleController {
     private final ArticleService articleService;
     private final UserService userService;
+
     @GetMapping("/list")
     public String list(Model model) {
         List<Article> articleList = this.articleService.getList();
         model.addAttribute("articleList", articleList);
         return "article_list";
     }
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/create")
     public String create(ArticleForm articleForm) {
         return "article_form";
     }
+
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create")
     public String create(@Valid ArticleForm articleForm, BindingResult bindingResult, Principal principal) {
         if (bindingResult.hasErrors()) {
-            return "question_form";
+            return "article_form";
         }
         SiteUser siteUser = this.userService.getUser(principal.getName());
-        this.articleService.create(articleForm.getTitle(), articleForm.getContent(),siteUser);
+        this.articleService.create(articleForm.getTitle(), articleForm.getContent(), siteUser);
         return "redirect:/article/list";
     }
 
     @GetMapping("/detail/{id}")
-    public String detail (Model model, @PathVariable("id")Integer id){
+    public String detail(Model model, @PathVariable("id") Integer id) {
         Article article = this.articleService.getArticle(id);
-        model.addAttribute("article",article);
+        model.addAttribute("article", article);
         return "article_detail";
     }
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/modify/{id}")
     public String modify(ArticleForm articleForm, @PathVariable("id") Integer id, Principal principal) {
         Article article = this.articleService.getArticle(id);
-        if(!article.getAuthor().getUserId().equals(principal.getName())) {
+        if (!article.getAuthor().getUserId().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
         }
         articleForm.setTitle(article.getTitle());
         articleForm.setContent(article.getContent());
-        return "question_form";
+        return "article_form";
     }
+
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/modify/{id}")
     public String questionModify(@Valid ArticleForm articleForm, BindingResult bindingResult,
                                  Principal principal, @PathVariable("id") Integer id) {
         if (bindingResult.hasErrors()) {
-            return "question_form";
+            return "article_form";
         }
         Article article = this.articleService.getArticle(id);
         if (!article.getAuthor().getUserId().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
         }
         this.articleService.modify(article, articleForm.getTitle(), articleForm.getContent());
-        return String.format("redirect:/question/detail/%s", id);
+        return String.format("redirect:/article/detail/%s", id);
     }
 }
